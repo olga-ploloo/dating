@@ -25,9 +25,9 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = 'kl7lm^4+u&8!=lo%(tz8+2nf8&c=j)_9&w0g_(e9s0o%(iy$-4'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = 'True'
 
-ALLOWED_HOSTS = ['dating.com', 'localhost', '127.0.0.1']
+ALLOWED_HOSTS = [".herokuapp.com"]
 
 
 # Application definition
@@ -43,11 +43,11 @@ INSTALLED_APPS = [
     'registration',
     'chat',
     'social_django',
-    'django_extensions',
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -131,10 +131,20 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.11/howto/static-files/
 
 STATIC_URL = '/static/'
-STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static'), ]
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'static'),
+    os.path.join(BASE_DIR, 'media')
+]
 
 MEDIA_URL = '/media/'
-MEDIA_ROOT = 'media'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+STATICFILES_FINDERS = [
+    'django.contrib.staticfiles.finders.FileSystemFinder',
+    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
+]
 
 LOGIN_REDIRECT_URL = 'login_redirect'
 LOGOUT_REDIRECT_URL = 'start'
@@ -146,15 +156,15 @@ AUTHENTICATION_BACKENDS = [
     'social_core.backends.vk.VKOAuth2',
     'social_core.backends.linkedin.LinkedinOAuth2',
 ]
-SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = os.getenv('GOOGLE_KEY')
-SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = os.getenv('GOOGLE_SECRET')
+SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = '252824708833-qrc6sa5phnf366uuf3gg0cme4nd6j5j4.apps.googleusercontent.com'
+SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = 'JiemWVyXlP2eiLZpK0qPPBGi'
 
-SOCIAL_AUTH_VK_OAUTH2_KEY = os.getenv('VK_KEY')
-SOCIAL_AUTH_VK_OAUTH2_SECRET = os.getenv('VK_SECRET')
+SOCIAL_AUTH_VK_OAUTH2_KEY = '7440176'
+SOCIAL_AUTH_VK_OAUTH2_SECRET = 'GUqdpTfYV2H2yZ0s7EtC'
 SOCIAL_AUTH_VK_OAUTH2_SCOPE = ['email']
 
-SOCIAL_AUTH_LINKEDIN_OAUTH2_KEY = os.getenv('LINKEDIN_KEY')
-SOCIAL_AUTH_LINKEDIN_OAUTH2_SECRET = os.getenv('LINKEDIN_SECRET')
+SOCIAL_AUTH_LINKEDIN_OAUTH2_KEY = '7764skm78rzphb'
+SOCIAL_AUTH_LINKEDIN_OAUTH2_SECRET = 'lxGruTxNV2Vgk31d'
 SOCIAL_AUTH_LINKEDIN_OAUTH2_SCOPE = ['r_emailaddress']
 SOCIAL_AUTH_LINKEDIN_OAUTH2_FIELD_SELECTORS = ['email-address', 'formatted-name',  'picture-url']
 SOCIAL_AUTH_LINKEDIN_OAUTH2_EXTRA_DATA = [
@@ -166,6 +176,7 @@ PAGE_SIZE_MESSAGE = 5
 PAGE_SIZE = 1
 
 ADMIN_EMAIL = os.getenv('ADMIN_EMAIL')
+CELERY_TASK_SERIALIZER = 'json'
 CELERY_BROKER_URL = 'redis://127.0.0.1:6379/1'
 CELERY_RESULT_BACKEND = 'redis://127.0.0.1:6379/2'
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
@@ -177,3 +188,12 @@ EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
 MESSAGE_TAGS = {
     messages.ERROR: 'danger'
 }
+
+
+try:
+    import django_heroku
+    django_heroku.settings(locals())
+except ImportError:
+    pass
+
+

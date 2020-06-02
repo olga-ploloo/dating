@@ -7,12 +7,11 @@ from chat.models import Message, Chat
 
 
 @shared_task
-def new_message(message_id, message_author, chat_id):
-    time.sleep(3600)
+def new_message(message_id):
     message = Message.objects.filter(is_read=False).filer(id=message_id).first()
     if message:
-        chat = Chat.objects.get(id=chat_id)
-        members_ids = chat.values_list('members__id', flat=True)
+        members_ids = Chat.objects.values_list('members__id', flat=True).get(id=message.chat_id)
+        message_author = message.author_id
         for member in members_ids:
             if member != message_author:
                 user = User.objects.get(id=member)
@@ -24,5 +23,6 @@ def new_message(message_id, message_author, chat_id):
                     from_email=settings.ADMIN_EMAIL,
                     recipient_list=[user.email]
                 )
+
 
 

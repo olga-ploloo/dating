@@ -43,7 +43,7 @@ class MessagesView(LoginRequiredMixin, View):
             message.chat_id = pk
             message.author = self.request.user
             message.save()
-            new_message.delay(message.id, message.author, message.chat_id)
+            new_message.apply_async(args=[message.id,], countdown=3600)
         return redirect(reverse('messages', kwargs={'pk': pk}))
 
 
