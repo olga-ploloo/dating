@@ -46,7 +46,7 @@ class UserProfile(models.Model):
     location = models.CharField(max_length=30, null=True)
     birthday = models.DateField(null=True)
     avatar = models.ImageField(upload_to='user/%Y/%m/%d/', blank=True)
-    age = models.CharField(max_length=15, blank=True, null=True)
+    age = models.CharField(max_length=37, blank=True, null=True)
     partner_gender = models.CharField(
         max_length=6,
         choices=CHOICES_GENDER,
@@ -101,7 +101,7 @@ class UserLike(models.Model):
     like = models.BooleanField(default=False)
 
     def __str__(self):
-        return str(self.voter) + '+' + str(self.to_user) + '=' + str(self.like)
+        return f'{self.voter} + {self.to_user} + {self.like}'
 
     class Meta:
         unique_together = ('to_user', 'voter')

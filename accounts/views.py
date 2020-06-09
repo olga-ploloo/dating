@@ -2,7 +2,7 @@ from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 from django.shortcuts import redirect, render, get_object_or_404
 from django.views.generic import TemplateView, ListView, UpdateView
 from accounts.forms import UserProfileEditForm, UserEditForm
@@ -20,7 +20,7 @@ class Start(TemplateView):
 
 @login_required
 def user_profile_view(request, pk):
-    user = get_object_or_404(User, pk=pk)
+    user = get_object_or_404(get_user_model(), pk=pk)
     return render(request, 'profile.html', context={
         'user': user,
         'selected_user': request.user
@@ -63,7 +63,7 @@ class PeopleList(LoginRequiredMixin, ListView):
     paginate_by = settings.PAGE_SIZE
 
     def get_queryset(self):
-        return User.objects.filter(
+        return get_user_model().objects.filter(
             userprofile__gender=self.request.user.userprofile.partner_gender).filter(
             userprofile__age=self.request.user.userprofile.partner_age).filter(
             userprofile__orientation=self.request.user.userprofile.partner_orientation).exclude(
@@ -74,7 +74,7 @@ class PeopleList(LoginRequiredMixin, ListView):
 
 @login_required
 def create_like(request, pk, vote):
-    user = get_object_or_404(User, pk=pk)
+    user = get_object_or_404(get_user_model(), pk=pk)
     UserLike.objects.create(
         to_user=user, voter=request.user, like=vote)
     return redirect('people')

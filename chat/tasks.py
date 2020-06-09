@@ -1,9 +1,9 @@
 from django.conf import settings
-import time
 from celery import shared_task
 from django.core.mail import send_mail
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 from chat.models import Message, Chat
+User = get_user_model()
 
 
 @shared_task

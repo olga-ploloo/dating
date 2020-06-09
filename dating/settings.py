@@ -27,7 +27,7 @@ SECRET_KEY = 'kl7lm^4+u&8!=lo%(tz8+2nf8&c=j)_9&w0g_(e9s0o%(iy$-4'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = 'True'
 
-ALLOWED_HOSTS = [".herokuapp.com"]
+ALLOWED_HOSTS = ["*"]
 
 
 # Application definition
@@ -131,7 +131,6 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.11/howto/static-files/
 
 STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static'),
     os.path.join(BASE_DIR, 'media')
@@ -156,15 +155,15 @@ AUTHENTICATION_BACKENDS = [
     'social_core.backends.vk.VKOAuth2',
     'social_core.backends.linkedin.LinkedinOAuth2',
 ]
-SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = '252824708833-qrc6sa5phnf366uuf3gg0cme4nd6j5j4.apps.googleusercontent.com'
-SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = 'JiemWVyXlP2eiLZpK0qPPBGi'
+SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = os.getenv('GOOGLE_KEY')
+SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = os.getenv('GOOGLE_SECRET')
 
-SOCIAL_AUTH_VK_OAUTH2_KEY = '7440176'
-SOCIAL_AUTH_VK_OAUTH2_SECRET = 'GUqdpTfYV2H2yZ0s7EtC'
+SOCIAL_AUTH_VK_OAUTH2_KEY = os.getenv('VK_NAME')
+SOCIAL_AUTH_VK_OAUTH2_SECRET = os.getenv('VK_SECRET')
 SOCIAL_AUTH_VK_OAUTH2_SCOPE = ['email']
 
-SOCIAL_AUTH_LINKEDIN_OAUTH2_KEY = '7764skm78rzphb'
-SOCIAL_AUTH_LINKEDIN_OAUTH2_SECRET = 'lxGruTxNV2Vgk31d'
+SOCIAL_AUTH_LINKEDIN_OAUTH2_KEY = os.getenv('LINKEDIN_KEY')
+SOCIAL_AUTH_LINKEDIN_OAUTH2_SECRET = os.getenv('LINKEDIN_SECRET')
 SOCIAL_AUTH_LINKEDIN_OAUTH2_SCOPE = ['r_emailaddress']
 SOCIAL_AUTH_LINKEDIN_OAUTH2_FIELD_SELECTORS = ['email-address', 'formatted-name',  'picture-url']
 SOCIAL_AUTH_LINKEDIN_OAUTH2_EXTRA_DATA = [

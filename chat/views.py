@@ -2,7 +2,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.paginator import Paginator
 from django.db.models import Count
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
 from django.views import View
 from chat.forms import MessageForm
@@ -20,35 +20,35 @@ def get_all_chats(request):
 
 class MessagesView(LoginRequiredMixin, View):
     def get(self, request, pk):
-        chat = Chat.objects.get(id=pk)
+        chat = get_object_or_404(Chat, id=pk)
         if request.user in chat.members.all():
             chat.messages.filter(is_read=False).exclude(author=request.user).update(is_read=True)
-        else:
-            chat = None
-        chat_messages = chat.messages.all()
-        paginator = Paginator(chat_messages, settings.PAGE_SIZE_MESSAGE,  orphans=settings.PAGE_SIZE_MESSAGE)
-        page = request.GET.get('page', paginator.num_pages)
-        chat_messages = paginator.get_page(page)
-        return render(
-            request, 'chat.html', context={
-                'user': request.user,
-                'chat': chat,
-                'chat_messages': chat_messages,
-                'form': MessageForm()})
+            chat_messages = chat.messages.all()
+            paginator = Paginator(chat_messages, settings.PAGE_SIZE_MESSAGE,  orphans=settings.PAGE_SIZE_MESSAGE)
+            page = request.GET.get('page', paginator.num_pages)
+            chat_messages = paginator.get_page(page)
+            return render(
+                request, 'chat.html', context={
+                    'user': request.user,
+                    'chat': chat,
+                    'chat_messages': chat_messages,
+                    'form': MessageForm()})
 
     def post(self, request, pk):
-        form = MessageForm(data=request.POST)
-        if form.is_valid():
-            message = form.save(commit=False)
-            message.chat_id = pk
-            message.author = self.request.user
-            message.save()
-            new_message.apply_async(args=[message.id,], countdown=3600)
-        return redirect(reverse('messages', kwargs={'pk': pk}))
+        chat = get_object_or_404(Chat, id=pk)
+        if request.user in chat.members.all():
+            form = MessageForm(data=request.POST)
+            if form.is_valid():
+                message = form.save(commit=False)
+                message.chat_id = pk
+                message.author = self.request.user
+                message.save()
+                new_message.apply_async(args=[message.id,], countdown=3600)
+            return redirect(reverse('messages', kwargs={'pk': pk}))
 
 
 class CreateDialogView(LoginRequiredMixin, View):
-    def get(self, request, user_id):
+    def post(self, request, user_id):
         member = [user_id, self.request.user.id]
         chat = Chat.objects.filter(members__in=member).annotate(num_attr=Count('members')).filter(num_attr=2).first()
         if not chat:
