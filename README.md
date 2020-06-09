@@ -1,1 +1,1 @@
-# dating
+Django Dating app
